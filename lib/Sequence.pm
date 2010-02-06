@@ -39,7 +39,7 @@ sub empty {
 sub seq {
     my $coll = shift;
 
-    return empty unless defined $coll;
+    return undef unless defined $coll;
 
     if (my $ref = ref $coll) {
         if (my $a = $adapters{$ref}) {
@@ -49,10 +49,10 @@ sub seq {
             return $coll->seq if $coll->can('seq');
         }
 
-        croak "Unknown reftype: $ref";
+        croak "Cannot make seq out of $ref";
     }
 
-    croak 'Can only make seqs from reftypes';
+    croak "Cannot make seq out of argument";
 }
 
 sub first {

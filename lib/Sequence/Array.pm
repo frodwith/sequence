@@ -16,11 +16,18 @@ has index => (
     default => 0,
 );
 
-sub BUILDARGS {
+around new => sub {
+    my $super = shift;
     my $class = shift;
-    @_ = (array => shift) if @_ == 1;
-    return $class->SUPER::BUILDARGS(@_);
-}
+
+    if (@_ == 1) {
+        my $a = shift;
+        return undef if @$a < 1;
+        @_ = (array => $a);
+    }
+
+    return $class->$super(@_);
+};
 
 sub first {
     my $self = shift;
