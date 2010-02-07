@@ -4,6 +4,8 @@ use Moose;
 extends 'Sequence::Base';
 with    'Sequence::Role';
 
+use namespace::clean -except => 'meta';
+
 sub new {
     my ($class, $car, $cdr) = @_;
 
@@ -14,12 +16,10 @@ sub first {
     return shift->[0];
 }
 
-sub rest {
+sub succ {
     return shift->[1];
 }
 
-sub empty {
-    return 0;
-}
+no namespace::clean;
 
 1;

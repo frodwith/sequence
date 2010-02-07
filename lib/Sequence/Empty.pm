@@ -1,7 +1,9 @@
 package Sequence::Empty;
 
 use Moose;
-with 'Sequence::Role';
+with 'Sequence::Role' => { excludes => 'seq' };
+
+use namespace::clean -except => 'meta';
 
 my $self = bless do { \my $scalar };
 
@@ -22,7 +24,13 @@ sub rest {
 }
 
 sub cons {
-    return Sequence::Cons->new(shift, $self);
+    return Sequence::Cons->new($_[1], $self);
 }
+
+sub seq {
+    return undef;
+}
+
+no namespace::clean;
 
 1;

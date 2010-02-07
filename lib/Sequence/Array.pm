@@ -4,6 +4,8 @@ use Moose;
 extends 'Sequence::Base';
 with    'Sequence::Role';
 
+use namespace::clean -except => 'meta';
+
 has array => (
     is       => 'ro',
     isa      => 'ArrayRef',
@@ -46,5 +48,7 @@ sub succ {
         index => $self->index + 1
     );
 }
+
+no namespace::clean;
 
 1;
