@@ -8,7 +8,7 @@ use Sequence::Lazy;
 use Sequence::Cons;
 
 use Sub::Exporter -setup => {
-    exports => [ qw(seq first rest succ cons reduce smap) ],
+    exports => [ qw(seq first rest succ cons reduce smap filter) ],
 };
 
 use namespace::clean -except => 'import';
@@ -53,11 +53,17 @@ sub first {
 }
 
 sub rest {
-    seq(shift)->rest;
+    my $seq = seq(shift)
+        or return empty;
+
+    return $seq->rest;
 }
 
 sub succ {
-    seq(shift)->succ;
+    my $seq = seq(shift)
+        or return undef;
+
+    return $seq->succ;
 }
 
 sub cons {
@@ -66,7 +72,7 @@ sub cons {
 
 sub reduce(&$$) {
     my ($f, $coll, $val) = @_;
-    for (my $seq = seq $coll; $seq; $seq = succ $seq) {
+    for (my $seq = seq($coll); $seq; $seq = succ($seq)) {
         $val = $f->($val, first($seq));
     }
     return $val;
@@ -79,8 +85,18 @@ sub lazy_seq(&) {
 sub smap(&$) {
     my ($f, $coll) = @_;
     return lazy_seq {
-        my $s = seq $coll or return;
-        cons $f->(first($s)), smap($f, rest($s));
+        my $s = seq($coll) or return;
+        cons($f->(first($s)), smap($f, rest($s)));
+    };
+}
+
+sub filter(&$) {
+    my ($f, $coll) = @_;
+    return lazy_seq {
+        my $s     = seq($coll) or return;
+        my $first = first($s);
+        my $rest  = filter($f, rest($s));
+        return $f->($first) ? cons($first, $rest) : $rest;
     };
 }
 
